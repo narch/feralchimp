@@ -18,7 +18,7 @@ gem install feralchimp
 * Allowing you to choose whether or not to raise or return `{}`.
 
 ## Options:
-* Feralchimp.mailchimp_key = Mailchimp key w/ region part.
+* Feralchimp.key = Mailchimp key w/ region part.
 * Feralchimp.raise = True or False
 * Feralchimp.timeout = *Defaults:* 5
 * *You can also optionally set ENV["MAILCHIMP_API_KEY"] too*
