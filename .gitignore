@@ -1,2 +1,4 @@
 /coverage
 /pkg
+/.rvmrc
+/Gemfile.lock
