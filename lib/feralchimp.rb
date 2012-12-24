@@ -98,10 +98,7 @@ class Feralchimp
 
   private
   def api_path(export = false)
-    if !export
-      "/1.3/?method=%s"
-    # Trail is important yo...
-    else "/export/1.0/%s/" end
+    export ? "/export/1.0/%s/" : "/1.3/?method=%s"
   end
 
   private
