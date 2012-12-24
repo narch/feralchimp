@@ -1,4 +1,3 @@
 class Feralchimp
-  VERSION, URL =
-    "0.1.0", "https://github.com/envygeeks/feralchimp"
+  VERSION = "0.1.0"
 end

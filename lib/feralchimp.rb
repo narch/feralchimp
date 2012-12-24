@@ -82,8 +82,6 @@ class Feralchimp
     method = method.to_mailchimp_method
 
     ::Faraday.new(:url => api_url(key.last)) { |o|
-      o.headers[:user_agent] = "Feralchimp v#{VERSION} (#{URL})"
-      o.options[:open_timeout] = self.class.timeout
       o.response(export ? :json_export : :json)
       o.options[:timeout] = self.class.timeout
       o.request(:url_encoded)
