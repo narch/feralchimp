@@ -49,27 +49,25 @@ class Feralchimp
   end
 
   def method_missing(method, *args)
-    begin
-      if method == :export
-        if args.count > 0
-          raise ::ArgumentError, "#{args.count} for 0"
-        end
-
-        self.class.exportar = true
-        return self # Oh, trickey!
+    if method == :export
+      if args.count > 0
+        raise ::ArgumentError, "#{args.count} for 0"
       end
 
-      call(method, *args)
-    rescue => error
-      if self.class.raise
-        raise error
-      else
-        FeralchimpErrorHash.new({
-          "object" => error,
-          "code" => 9001,
-          "error" => error.message
-        })
-      end
+      self.class.exportar = true
+      return self # Oh, trickey!
+    end
+
+    call(method, *args)
+  rescue => error
+    if self.class.raise
+      raise error
+    else
+      FeralchimpErrorHash.new({
+        "object" => error,
+        "code" => 9001,
+        "error" => error.message
+      })
     end
   end
 
