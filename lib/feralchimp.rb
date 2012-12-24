@@ -58,7 +58,7 @@ class Feralchimp
       return self # Oh, trickey!
     end
 
-    call(method, *args)
+    send_to_mailchimp(method, *args)
   rescue => error
     if self.class.raise
       raise error
@@ -72,7 +72,7 @@ class Feralchimp
   end
 
   private
-  def call(method, bananas = {}, export = self.class.exportar)
+  def send_to_mailchimp(method, bananas = {}, export = self.class.exportar)
     raise MethodError, "No method provided." if method.blank?
 
     key = parse_key(bananas.delete(:apikey) || @key)
