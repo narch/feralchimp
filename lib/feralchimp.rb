@@ -48,7 +48,7 @@ class Feralchimp
     @key = key || self.class.key
   end
 
-  def method_missing(method, *args, &block)
+  def method_missing(method, *args)
     begin
       if method == :export
         if args.count > 0
@@ -119,7 +119,7 @@ class Feralchimp
     attr_accessor :exportar, :raise, :timeout, :key, :list_id
     alias :api_key= :key=; alias :api_key :key
 
-    def method_missing(method, *args, &block)
+    def method_missing(method, *args)
       new.send(*args.unshift(method))
     end
 
