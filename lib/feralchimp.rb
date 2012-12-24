@@ -107,7 +107,9 @@ class Feralchimp
   end
 
   class << self
-    attr_accessor :exportar, :raise, :timeout, :key
+    attr_accessor :exportar, :raise, :timeout, :key, :list_id
+    alias :api_key= :key=; alias :api_key :key
+
     def method_missing(method, *args, &block)
       new.send(*args.unshift(method))
     end
