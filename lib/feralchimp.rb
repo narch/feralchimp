@@ -40,7 +40,7 @@ class Feralchimp
   @raise = false
   @key = ENV["MAILCHIMP_API_KEY"]
 
-  [:MethodError, :KeyError].each { |o|
+  [:MethodError, :KeyError, :MailchimpError].each { |o|
     const_set(o, Class.new(StandardError))
   }
 
@@ -81,7 +81,7 @@ class Feralchimp
     self.class.exportar = false
     method = method.to_mailchimp_method
 
-    ::Faraday.new(:url => api_url(key.last)) { |o|
+    raise_or_return ::Faraday.new(:url => api_url(key.last)) { |o|
       o.response(export ? :json_export : :json)
       o.options[:timeout] = self.class.timeout
       o.request(:url_encoded)
@@ -104,6 +104,15 @@ class Feralchimp
   private
   def api_url(zone)
     URI.parse("https://#{zone}.api.mailchimp.com")
+  end
+
+  private
+  def raise_or_return(rtn)
+    if self.class.raise && (rtn.is_a?(Hash) && rtn.has_key?("error"))
+      raise MailchimpError, rtn["error"]
+    end
+
+  rtn
   end
 
   class << self
