@@ -19,7 +19,7 @@ class FeralchimpErrorHash < Hash
   super
   end
 
-  def method_missing(method, *args, &block)
+  def method_missing(method, *args)
     return self
   end
 end
