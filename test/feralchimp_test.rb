@@ -1,54 +1,83 @@
 $:.unshift(File.expand_path("../../lib", __FILE__))
 COVERAGE, BENCHMARK = true, false
-
-# Protects against undef(nil)..
+require "simplecov"
 unless ENV["COVERAGE"] == false || COVERAGE == false
-  require "simplecov"
   SimpleCov.command_name("minitest") and SimpleCov.start
 end
 
-EXPORT_DATA = IO.read(File.expand_path("../responses/export.txt", __FILE__))
-API_DATA = IO.read(File.expand_path("../responses/api.json", __FILE__))
+ERROR_MATCH = "https://us6.api.mailchimp.com/1.3/?method=error"
 API_MATCH = %r!^https://us6.api.mailchimp.com/1.3/\?method=.*!
 EXPORT_MATCH = %r!^https://us6.api.mailchimp.com/export/1.0/.*/!
+
+EXPORT_DATA = IO.read(File.expand_path("../responses/export.txt", __FILE__))
+API_DATA = IO.read(File.expand_path("../responses/api.json", __FILE__))
+ERROR_DATA = IO.read(File.expand_path("../responses/error.json", __FILE__))
 
 require "minitest/benchmark"
 require "minitest/autorun"
 require "minitest/pride"
 require "minitest/unit"
+require "minitest/spec"
 require "fakeweb"
 require "pry"
 require "feralchimp"
 
-FakeWeb.register_uri(:any, EXPORT_MATCH, :body => EXPORT_DATA)
-FakeWeb.register_uri(:any, API_MATCH, :body => API_DATA)
 FakeWeb.allow_net_connect = false
 
-class ObjectTest < MiniTest::Unit::TestCase
-  def test_to_mailchimp_method
-    assert_equal("testMethod", "test_method".to_mailchimp_method)
-  end
+FakeWeb.register_uri(:any, ERROR_MATCH, :body => ERROR_DATA)
+FakeWeb.register_uri(:any, API_MATCH, :body => API_DATA)
+FakeWeb.register_uri(:any, EXPORT_MATCH, :body => EXPORT_DATA)
 
-  def test_blank?
-    assert("".blank?)
-  end
-end
+describe(Object) {
+  describe("#to_mailchimp_method") {
+    describe("('test_method')") {
+      it("should return 'testMethod'") {
+        assert_equal("testMethod", "test_method".to_mailchimp_method)
+      }
+    }
 
-class FeralchimpErrorHashTest < MiniTest::Unit::TestCase
-  def test_initialize
-    assert_equal({}, FeralchimpErrorHash.new)
-    assert_equal({ test: 1 }, FeralchimpErrorHash.new({ test: 1 }))
-  end
-end
+    describe("('testMethod')") {
+      it("should return 'testMethod'") {
+        assert_equal("testMethod", "testMethod".to_mailchimp_method)
+      }
+    }
+  }
 
-class FeralchimpTest < MiniTest::Unit::TestCase
+  describe("#blank?") {
+    it("should just work") {
+      assert_equal([true, true, true], [{}.blank?, [].blank?, "".blank?])
+    }
+  }
+}
+
+describe(FeralchimpErrorHash) {
+  describe("#initialize") {
+    describe("({ test: 1 })") {
+      it("should return { test: 1 }") {
+        assert_equal({ test: 1 }, FeralchimpErrorHash.new({ test: 1 }))
+      }
+    }
+
+    it("should return { }") {
+      assert_equal({}, FeralchimpErrorHash.new)
+    }
+  }
+
+  describe("#method_missing") {
+    it("should just work") {
+      assert_equal({}, FeralchimpErrorHash.new.test1)
+    }
+  }
+}
+
+describe(Feralchimp) {
   def teardown
     ENV.delete("MAILCHIMP_API_KEY")
     Feralchimp.class_eval {
-      @raise = false
-      @key = false
-      @timeout = false
-      @exportar = false
+      @timeout = nil
+      @raise = nil
+      @key = nil
+      @exportar = nil
     }
   end
 
@@ -74,53 +103,110 @@ class FeralchimpTest < MiniTest::Unit::TestCase
     end
   end
 
-  def test_version
-    assert_match(%r!(\d+.)+(.pre\d{1})?!, Feralchimp::VERSION)
-  end
+  describe("VERSION") {
+    it("should be proper") {
+      assert_match(%r!(\d+.)+(.pre\d{1})?!, Feralchimp::VERSION)
+    }
+  }
 
-  def test_method_missing_api
-    Feralchimp.key = "a-us6"
-    assert_kind_of(Hash, Feralchimp.lists)
-    assert_equal({ "total" => 1 }, Feralchimp.lists)
-  end
+  describe(".method_missing") {
+    describe("using a key set with key=") {
+      it("should just work") {
+        Feralchimp.key = "a-us6"
+        assert_equal({ "total" => 1 }, Feralchimp.lists)
+      }
+    }
 
-  def test_method_missing_instance_api
-    Feralchimp.key = "a-us6"
-    assert_kind_of(Hash, Feralchimp.new.lists)
-    assert_equal({ "total" => 1 }, Feralchimp.new.lists)
-  end
+    describe("using a key set while calling the API method") {
+      it("should just work") {
+        assert_equal({ "total" => 1 }, Feralchimp.lists(apikey: "a-us6"))
+      }
+    }
+  }
 
-  def test_method_missing_instance_api
-    assert_kind_of(Hash, Feralchimp.new("a-us6").lists)
-    assert_equal({ "total" => 1 }, Feralchimp.new("a-us6").lists)
-  end
+  describe("#method_missing") {
+    describe("using a key set while calling the API method") {
+      it("should just work") {
+        assert_equal({ "total" => 1 }, Feralchimp.new.lists(apikey: "a-us6"))
+      }
+    }
 
-  def test_method_missing_export
-    Feralchimp.key = "a-us6"
-    Feralchimp.raise = true
-    expected_out = [
-      { "header1" => "return1", "header2" => "return2" },
-      { "header1" => "return1", "header2" => "return2" }
-    ]
+    describe("using a key set with key=") {
+      it("should just work") {
+        Feralchimp.key = "a-us6"
+        assert_equal({ "total" => 1 }, Feralchimp.new.lists)
+      }
+    }
 
-    assert_kind_of(Array, Feralchimp.export.list(id: 1))
-    refute(Feralchimp.exportar) # Tests the rest, yes.
-    assert_equal(expected_out, Feralchimp.export.list(id: 1))
-  end
+    describe("using a key set while calling new") {
+      it("should just work") {
+        assert_equal({ "total" => 1 }, Feralchimp.new("a-us6").lists)
+      }
+    }
+  }
 
-  def test_raise=
-    assert_kind_of(FeralchimpErrorHash, Feralchimp.export(1).list(id: 1))
-    assert_kind_of(FeralchimpErrorHash, Feralchimp.lists)
+  describe("export") {
+    it("should set exportar") {
+      Feralchimp.export
+      assert(Feralchimp.exportar)
+    }
 
-    Feralchimp.raise = true
-    assert_raises(Feralchimp::KeyError) { Feralchimp.lists }
-    assert_raises(ArgumentError) { Feralchimp.export(1).list(id: 1) }
-  end
+    it("should just work") {
+      expected_out = [
+        { "header1" => "return1", "header2" => "return2" },
+        { "header1" => "return1", "header2" => "return2" }
+      ]
 
-  def test_key=
-    Feralchimp.key = "a-us6"
-    assert_equal("a-us6", Feralchimp.key)
-    assert_equal("a-us6", Feralchimp.new.instance_variable_get(:@key))
-    assert_equal("b-us6", Feralchimp.new("b-us6").instance_variable_get(:@key))
-  end
-end
+      assert_equal(expected_out, Feralchimp.export.list(apikey: "a-us6", id: 1))
+    }
+  }
+
+  describe(".exportar") {
+    it("should be reset after each call") {
+      Feralchimp.export.list(apikey: "a-us6", id: 1)
+      refute(Feralchimp.exportar)
+    }
+
+    it("should not accept any arguments") {
+      Feralchimp.raise = true
+      assert_raises(ArgumentError) { Feralchimp.export(:win).list }
+    }
+  }
+
+  describe("key") {
+    it("should be aliased over to api_key") {
+      assert(Feralchimp.respond_to?(:api_key))
+    }
+
+    it("shoud be aliased over to api_key=") {
+      assert(Feralchimp.respond_to?(:api_key=))
+    }
+
+    it("should make new(api_key) more important than key") {
+      assert_equal("b-us6", Feralchimp.new("b-us6").instance_variable_get(:@key))
+    }
+  }
+
+  describe("raise") {
+    describe("== true") {
+      it("should raise the error") {
+        Feralchimp.raise = true
+        assert_raises(Feralchimp::KeyError) { Feralchimp.list }
+        assert_raises(Feralchimp::MailchimpError) { Feralchimp.new("a-us6").error }
+      }
+    }
+
+    describe("== false") {
+      it("should return a hash") {
+        error1 = Feralchimp.lists
+        Feralchimp.key = "a-us6"
+        error2 = Feralchimp.error
+
+        assert_kind_of(Hash, error1)
+        assert_kind_of(Hash, error2)
+        assert_equal("Invalid key: .", error1["error"])
+        assert_equal("You lost the game bro.", error2["error"])
+      }
+    }
+  }
+}
