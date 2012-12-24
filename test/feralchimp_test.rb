@@ -1,17 +1,27 @@
 $:.unshift(File.expand_path("../../lib", __FILE__))
 COVERAGE, BENCHMARK = true, false
+
 require "simplecov"
+require "pathname"
+
+ROOT = Pathname.new(File.expand_path("../", __FILE__))
 unless ENV["COVERAGE"] == false || COVERAGE == false
   SimpleCov.command_name("minitest") and SimpleCov.start
 end
 
-ERROR_MATCH = "https://us6.api.mailchimp.com/1.3/?method=error"
-API_MATCH = %r!^https://us6.api.mailchimp.com/1.3/\?method=.*!
-EXPORT_MATCH = %r!^https://us6.api.mailchimp.com/export/1.0/.*/!
+URLS = {
+  export: %r!^https://us6.api.mailchimp.com/export/1.0/.*/!,
+  error: "https://us6.api.mailchimp.com/1.3/?method=error",
+  api: %r!^https://us6.api.mailchimp.com/1.3/\?method=.*!,
+  export_bench: "https://us6.api.mailchimp.com/export/1.0/bench/"
+}
 
-EXPORT_DATA = IO.read(File.expand_path("../responses/export.txt", __FILE__))
-API_DATA = IO.read(File.expand_path("../responses/api.json", __FILE__))
-ERROR_DATA = IO.read(File.expand_path("../responses/error.json", __FILE__))
+DATA = {
+  export: IO.read(ROOT.join("responses/export.txt")),
+  error: IO.read(ROOT.join("responses/error.json")),
+  api: IO.read(ROOT.join("responses/api.json")),
+  export_bench: IO.read(ROOT.join("responses/bench.txt")),
+}
 
 require "minitest/benchmark"
 require "minitest/autorun"
@@ -24,9 +34,10 @@ require "feralchimp"
 
 FakeWeb.allow_net_connect = false
 
-FakeWeb.register_uri(:any, ERROR_MATCH, :body => ERROR_DATA)
-FakeWeb.register_uri(:any, API_MATCH, :body => API_DATA)
-FakeWeb.register_uri(:any, EXPORT_MATCH, :body => EXPORT_DATA)
+FakeWeb.register_uri(:any, URLS[:error], :body => DATA[:error])
+FakeWeb.register_uri(:any, URLS[:api], :body => DATA[:api])
+FakeWeb.register_uri(:any, URLS[:export], :body => DATA[:export])
+FakeWeb.register_uri(:any, URLS[:export_bench], :body => DATA[:export_bench])
 
 describe(Object) {
   describe("#to_mailchimp_method") {
@@ -70,6 +81,30 @@ describe(FeralchimpErrorHash) {
   }
 }
 
+if ENV["BENCHMARK"]
+  class FeralchimpTest < MiniTest::Unit::TestCase
+    def setup
+      Feralchimp.key = "a-us6"
+    end
+
+    def bench_feralchimp_api_calls
+      assert_performance(Proc.new { |*args| }) { |n|
+        n.times {
+          Feralchimp.lists
+        }
+      }
+    end
+
+    def bench_feralchimp_export_calls
+      assert_performance(Proc.new { |*args| }) { |n|
+        n.times {
+          Feralchimp.export.bench(id: 1)
+        }
+      }
+    end
+  end
+end
+
 describe(Feralchimp) {
   def teardown
     ENV.delete("MAILCHIMP_API_KEY")
@@ -79,28 +114,6 @@ describe(Feralchimp) {
       @key = nil
       @exportar = nil
     }
-  end
-
-  if ENV["BENCHMARK"] || BENCHMARK
-    def bench_feralchimp_api_calls
-      Feralchimp.key = "a-us6"
-      assert_performance(Proc.new { |*args| }) { |n|
-        n.times {
-          Feralchimp.lists
-        }
-      }
-    end
-  end
-
-  if ENV["BENCHMARK"] || BENCHMARK
-    def bench_feralchimp_export_calls
-      Feralchimp.key = "a-us6"
-      assert_performance(Proc.new { |*args| }) { |n|
-        n.times {
-          Feralchimp.export.list(id: 1)
-        }
-      }
-    end
   end
 
   describe("VERSION") {
