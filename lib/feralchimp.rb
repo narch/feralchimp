@@ -89,9 +89,11 @@ class Feralchimp
 
   private
   def parse_key(key)
-    if key =~ %r!\w+-{1}[a-z]{2}\d{1}!
-      key.split("-")
-    else raise KeyError, "Invalid key: #{key}." end
+    unless key =~ %r!\w+-{1}[a-z]{2}\d{1}!
+      raise KeyError, "Invalid key#{": #{key}" unless key.blank?}."
+    end
+
+    key.split("-")
   end
 
   private

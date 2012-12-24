@@ -204,7 +204,7 @@ describe(Feralchimp) {
 
         assert_kind_of(Hash, error1)
         assert_kind_of(Hash, error2)
-        assert_equal("Invalid key: .", error1["error"])
+        assert_equal("Invalid key.", error1["error"])
         assert_equal("You lost the game bro.", error2["error"])
       }
     }
