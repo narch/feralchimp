@@ -4,7 +4,6 @@ require "feralchimp/version"
 Gem::Specification.new do |s|
   s.email = ["jordon@envygeeks.com"]
   s.version = Feralchimp::VERSION
-  s.homepage = Feralchimp::URL
   s.name = "feralchimp"
   s.license = "MIT"
   s.has_rdoc = false
@@ -20,5 +19,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency("simplecov")
   s.add_development_dependency("guard-minitest")
   s.summary = "A simple API wrapper for Mailchimp."
+  s.homepage = "http://envygeeks.com/projects/feralchimp/"
   s.description = "A simple API wrapper for Mailchimp that uses Faraday."
 end
