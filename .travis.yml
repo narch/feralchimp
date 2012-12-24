@@ -9,8 +9,3 @@ notifications:
 branches:
   only:
     - master
-env:
-  - COVERAGE=true BENCHMARK=true
-  - COVERAGE=true BENCHMARK=true
-  - COVERAGE=true
-  - COVERAGE=true BENCHMARK=true

@@ -1,11 +1,10 @@
 $:.unshift(File.expand_path("../../lib", __FILE__))
-COVERAGE, BENCHMARK = true, false
-
 require "simplecov"
 require "pathname"
 
+BENCHMARK = true if (ENV["CI"] && RUBY_ENGINE != "rbx") || ENV["BENCHMARK"]
 ROOT = Pathname.new(File.expand_path("../", __FILE__))
-unless ENV["COVERAGE"] == false || COVERAGE == false
+unless ENV["COVERAGE"] == false
   SimpleCov.command_name("minitest") and SimpleCov.start
 end
 
@@ -81,7 +80,7 @@ describe(FeralchimpErrorHash) {
   }
 }
 
-if ENV["BENCHMARK"]
+if defined?(BENCHMARK) && BENCHMARK == true
   class FeralchimpTest < MiniTest::Unit::TestCase
     def setup
       Feralchimp.key = "a-us6"
