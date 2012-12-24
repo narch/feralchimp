@@ -114,6 +114,11 @@ class Feralchimp
     def method_missing(method, *args, &block)
       new.send(*args.unshift(method))
     end
+
+    # Minitest
+    def to_str
+      to_s
+    end
   end
 
   module Response
