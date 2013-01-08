@@ -38,47 +38,47 @@ FakeWeb.register_uri(:any, URLS[:api], :body => DATA[:api])
 FakeWeb.register_uri(:any, URLS[:export], :body => DATA[:export])
 FakeWeb.register_uri(:any, URLS[:export_bench], :body => DATA[:export_bench])
 
-describe(Object) {
-  describe("#to_mailchimp_method") {
-    describe("('test_method')") {
-      it("should return 'testMethod'") {
-        assert_equal("testMethod", "test_method".to_mailchimp_method)
-      }
-    }
+describe Object do
+  describe "#to_mailchimp_method" do
+    describe "('test_method')"  do
+      it "should return 'testMethod'"  do
+        "test_method".to_mailchimp_method.must_equal("testMethod")
+      end
+    end
 
-    describe("('testMethod')") {
-      it("should return 'testMethod'") {
-        assert_equal("testMethod", "testMethod".to_mailchimp_method)
-      }
-    }
-  }
+    describe "('testMethod')" do
+      it "should return 'testMethod'" do
+        "testMethod".to_mailchimp_method.must_equal("testMethod")
+      end
+    end
+  end
 
-  describe("#blank?") {
-    it("should just work") {
-      assert_equal([true, true, true], [{}.blank?, [].blank?, "".blank?])
-    }
-  }
-}
+  describe "#blank?" do
+    it "should just work" do
+      [{}.blank?, [].blank?, "".blank?].must_equal([true, true, true])
+    end
+  end
+end
 
-describe(FeralchimpErrorHash) {
-  describe("#initialize") {
-    describe("({ test: 1 })") {
-      it("should return { test: 1 }") {
-        assert_equal({ test: 1 }, FeralchimpErrorHash.new({ test: 1 }))
-      }
-    }
+describe FeralchimpErrorHash do
+  describe "#initialize" do
+    describe "({ test: 1 })" do
+      it "should return { test: 1 }" do
+       FeralchimpErrorHash.new(test: 1).must_equal(test: 1)
+      end
+    end
 
-    it("should return { }") {
-      assert_equal({}, FeralchimpErrorHash.new)
-    }
-  }
+    it "should return empty hash" do
+      FeralchimpErrorHash.new.must_equal(Hash.new)
+    end
+  end
 
-  describe("#method_missing") {
-    it("should just work") {
-      assert_equal({}, FeralchimpErrorHash.new.test1)
-    }
-  }
-}
+  describe "#method_missing" do
+    it "should just work" do
+      FeralchimpErrorHash.new.test1.must_equal(Hash.new)
+    end
+  end
+end
 
 if defined?(BENCHMARK) && BENCHMARK == true
   class FeralchimpTest < MiniTest::Unit::TestCase
@@ -88,23 +88,19 @@ if defined?(BENCHMARK) && BENCHMARK == true
 
     def bench_feralchimp_api_calls
       assert_performance(Proc.new { |*args| }) { |n|
-        n.times {
-          Feralchimp.lists
-        }
+        n.times { Feralchimp.lists }
       }
     end
 
     def bench_feralchimp_export_calls
       assert_performance(Proc.new { |*args| }) { |n|
-        n.times {
-          Feralchimp.export.bench(id: 1)
-        }
+        n.times { Feralchimp.export.bench(id: 1) }
       }
     end
   end
 end
 
-describe(Feralchimp) {
+describe Feralchimp do
   def teardown
     ENV.delete("MAILCHIMP_API_KEY")
     Feralchimp.class_eval {
@@ -115,110 +111,112 @@ describe(Feralchimp) {
     }
   end
 
-  describe("VERSION") {
-    it("should be proper") {
-      assert_match(%r!(\d+.)+(.pre\d{1})?!, Feralchimp::VERSION)
-    }
-  }
+describe "VERSION" do
+  it "should be proper" do
+    Feralchimp::VERSION.must_match(/(\d+.)+(.pre\d{1})?/)
+  end
+end
 
-  describe(".method_missing") {
-    describe("using a key set with key=") {
-      it("should just work") {
-        Feralchimp.key = "a-us6"
-        assert_equal({ "total" => 1 }, Feralchimp.lists)
-      }
-    }
+describe ".method_missing" do
+  describe "using a key set with key=" do
+    it "should just work" do
+      Feralchimp.key = "a-us6"
+      Feralchimp.lists.must_equal("total" => 1)
+    end
+  end
 
-    describe("using a key set while calling the API method") {
-      it("should just work") {
-        assert_equal({ "total" => 1 }, Feralchimp.lists(apikey: "a-us6"))
-      }
-    }
-  }
+  describe "using a key set while calling the API method" do
+    it "should just work" do
+      Feralchimp.lists(apikey: "a-us6").must_equal("total" => 1)
+    end
+  end
+end
 
-  describe("#method_missing") {
-    describe("using a key set while calling the API method") {
-      it("should just work") {
-        assert_equal({ "total" => 1 }, Feralchimp.new.lists(apikey: "a-us6"))
-      }
-    }
+describe "#method_missing" do
+  describe "using a key set while calling the API method" do
+    it "should just work" do
+      Feralchimp.new.lists(apikey: "a-us6").must_equal("total" => 1)
+    end
+  end
 
-    describe("using a key set with key=") {
-      it("should just work") {
-        Feralchimp.key = "a-us6"
-        assert_equal({ "total" => 1 }, Feralchimp.new.lists)
-      }
-    }
+  describe "using a key set with key=" do
+    it "should just work" do
+      Feralchimp.key = "a-us6"
+      Feralchimp.new.lists.must_equal("total" => 1)
+    end
+  end
 
-    describe("using a key set while calling new") {
-      it("should just work") {
-        assert_equal({ "total" => 1 }, Feralchimp.new("a-us6").lists)
-      }
-    }
-  }
+  describe "using a key set while calling new" do
+    it "should just work" do
+      Feralchimp.new("a-us6").lists.must_equal("total" => 1)
+    end
+  end
+end
 
-  describe("export") {
-    it("should set exportar") {
-      Feralchimp.export
-      assert(Feralchimp.exportar)
-    }
+describe "export" do
+  it "should set exportar" do
+    Feralchimp.export
+    Feralchimp.exportar.must_be(:==, true)
+  end
 
-    it("should just work") {
-      expected_out = [
-        { "header1" => "return1", "header2" => "return2" },
-        { "header1" => "return1", "header2" => "return2" }
-      ]
+  it "should just work" do
+    expected_out = [
+      { "header1" => "return1", "header2" => "return2" },
+      { "header1" => "return1", "header2" => "return2" }
+    ]
 
-      assert_equal(expected_out, Feralchimp.export.list(apikey: "a-us6", id: 1))
-    }
-  }
+    Feralchimp.export.list(apikey: "a-us6", id: 1).must_equal(expected_out)
+end
+  end
 
-  describe(".exportar") {
-    it("should be reset after each call") {
+  describe ".exportar" do
+    it "should be reset after each message" do
       Feralchimp.export.list(apikey: "a-us6", id: 1)
-      refute(Feralchimp.exportar)
-    }
+      Feralchimp.exportar.must_be(:==, false)
+    end
 
-    it("should not accept any arguments") {
+    it "should not accept any arguments" do
       Feralchimp.raise = true
-      assert_raises(ArgumentError) { Feralchimp.export(:win).list }
-    }
-  }
+      Feralchimp.method(:exportar).arity.must_equal(0)
+      Proc.new { Feralchimp.export(:some_arbitrary_argument) }.must_raise(ArgumentError)
+    end
+  end
 
-  describe("key") {
-    it("should be aliased over to api_key") {
-      assert(Feralchimp.respond_to?(:api_key))
-    }
+  describe "key" do
+    it "should be aliased over to api_key" do
+      Feralchimp.must_respond_to(:api_key)
+    end
 
-    it("shoud be aliased over to api_key=") {
-      assert(Feralchimp.respond_to?(:api_key=))
-    }
+    it "shoud be aliased over to api_key=" do
+      Feralchimp.must_respond_to(:api_key=)
+    end
 
-    it("should make new(api_key) more important than key") {
-      assert_equal("b-us6", Feralchimp.new("b-us6").instance_variable_get(:@key))
-    }
-  }
+    it "should make new(api_key) more important than key" do
+      Feralchimp.new("b-us6").instance_variable_get(:@key).must_equal("b-us6")
+    end
+  end
 
-  describe("raise") {
-    describe("== true") {
-      it("should raise the error") {
+  describe "raise" do
+    describe "== true" do
+      it "should raise the error" do
         Feralchimp.raise = true
-        assert_raises(Feralchimp::KeyError) { Feralchimp.list }
-        assert_raises(Feralchimp::MailchimpError) { Feralchimp.new("a-us6").error }
-      }
-    }
+        Proc.new { Feralchimp.list }.must_raise(Feralchimp::KeyError)
+        Proc.new { Feralchimp.new("a-us6").error }.must_raise(Feralchimp::MailchimpError)
+      end
+    end
 
-    describe("== false") {
-      it("should return a hash") {
+    describe "== false" do
+      it "should return a hash" do
         error1 = Feralchimp.lists
         Feralchimp.key = "a-us6"
         error2 = Feralchimp.error
 
-        assert_kind_of(Hash, error1)
-        assert_kind_of(Hash, error2)
-        assert_equal("Invalid key.", error1["error"])
-        assert_equal("You lost the game bro.", error2["error"])
-      }
-    }
-  }
-}
+        Feralchimp.key = "a-us6"
+        error1.must_be_kind_of(Hash)
+        error2.must_be_kind_of(Hash)
+        error1["error"].must_equal("Invalid key.")
+        error2["error"].must_equal("You lost the game bro.")
+      end
+    end
+  end
+end
