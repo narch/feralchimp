@@ -1,12 +1,14 @@
 $:.unshift(File.expand_path("../../lib", __FILE__))
-require "simplecov"
 require "pathname"
+
+if ENV["COVERAGE"] == true
+  require "simplecov"
+  SimpleCov.command_name("minitest") and SimpleCov.start
+end
+
 
 BENCHMARK = true if (ENV["CI"] && RUBY_ENGINE != "rbx") || ENV["BENCHMARK"]
 ROOT = Pathname.new(File.expand_path("../", __FILE__))
-unless ENV["COVERAGE"] == false
-  SimpleCov.command_name("minitest") and SimpleCov.start
-end
 
 URLS = {
   export: %r!^https://us6.api.mailchimp.com/export/1.0/.*/!,
@@ -28,7 +30,6 @@ require "minitest/pride"
 require "minitest/unit"
 require "minitest/spec"
 require "fakeweb"
-require "pry"
 require "feralchimp"
 
 FakeWeb.allow_net_connect = false
