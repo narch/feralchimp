@@ -62,10 +62,6 @@ This means that to work with the Export API you need do nothing more special tha
 
 Feralchimp accepts a hash based payload.  This payload is not tracked by us and all we do is transform it and post it so if you would like to know more about what payloads you might need to send to Mailchimp please visit the [Mailchimp API docs](http://apidocs.mailchimp.com/api/1.3/).
 
-## Testing and Contributing
-
-All I ask is that you license your code the same as mine, that you sign your commit before requesting a pull request (you should also do -S if you are on Git 1.7.9+) and that you eye your coverage along with listen to simplecov and maintain 100% coverage making sure you test critical features and new features and make sure you don't break old features.
-
 ```
 rake [spec|test]
 BENCHMARK=true rake [spec|test]
