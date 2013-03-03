@@ -83,6 +83,7 @@ class Feralchimp
 
     raise_or_return ::Faraday.new(:url => api_url(key.last)) { |o|
       o.response(export ? :mailchimp_export : :mailchimp)
+      o.options[:open_timeout] = self.class.timeout
       o.options[:timeout] = self.class.timeout
       o.request(:url_encoded)
       o.adapter(Faraday.default_adapter)
