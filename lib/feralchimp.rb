@@ -82,7 +82,7 @@ class Feralchimp
     method = method.to_mailchimp_method
 
     raise_or_return ::Faraday.new(:url => api_url(key.last)) { |o|
-      o.response(export ? :json_export : :json)
+      o.response(export ? :mailchimp_export : :mailchimp)
       o.options[:timeout] = self.class.timeout
       o.request(:url_encoded)
       o.adapter(Faraday.default_adapter)
@@ -155,5 +155,7 @@ private
   end
 end
 
-Faraday.register_middleware(:response, json: lambda { Feralchimp::Response::JSON })
-Faraday.register_middleware(:response, json_export: lambda { Feralchimp::Response::JSONExport })
+{ :mailchimp => :JSON, :mailchimp_export => :JSONExport }.each do |m, o|
+  o = Feralchimp::Response.const_get(o)
+  Faraday.register_middleware(:response, m => proc { o })
+end
