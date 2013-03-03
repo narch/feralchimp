@@ -42,8 +42,8 @@ class Feralchimp
   @timeout = 5
   @raise = false
 
-  [:MethodError, :KeyError, :MailchimpError].each do |o|
-    const_set(o, Class.new(StandardError))
+  [:KeyError, :MailchimpError].each do |o|
+    const_set o, Class.new(StandardError)
   end
 
   def initialize(key = nil)
@@ -73,10 +73,8 @@ class Feralchimp
     end
   end
 
-  private
+private
   def send_to_mailchimp(method, bananas = {}, export = self.class.exportar)
-    raise MethodError, "No method provided." if method.blank?
-
     key = parse_key(bananas.delete(:apikey) || @key)
     self.class.exportar = false
     method = method.to_mailchimp_method
@@ -85,7 +83,6 @@ class Feralchimp
       key.last, method, bananas.merge(apikey: key.first), export)
   end
 
-private
   def send_to_mailchimp_http(zone, method, bananas, export)
     raise_or_return Faraday.new(:url => api_url(zone)) { |o|
       o.response(export ? :mailchimp_export : :mailchimp)
