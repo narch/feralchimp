@@ -9,9 +9,9 @@ require "cgi"
 class FeralchimpErrorHash < Hash
   def initialize(hash = nil)
     if hash.is_a?(Hash)
-      hash.each { |k, v|
+      hash.each do |k, v|
         self[k] = v
-      }
+      end
 
       return self
     end
@@ -26,7 +26,9 @@ end
 
 class Object
   def to_mailchimp_method
-    self.to_s.gsub(/_(.)/) { $1.capitalize }
+    self.to_s.gsub(/_(.)/) do
+      $1.capitalize
+    end
   end
 
   def blank?
@@ -35,14 +37,14 @@ class Object
 end
 
 class Feralchimp
+  @key = ENV["MAILCHIMP_API_KEY"]
   @exportar = false
   @timeout = 5
   @raise = false
-  @key = ENV["MAILCHIMP_API_KEY"]
 
-  [:MethodError, :KeyError, :MailchimpError].each { |o|
+  [:MethodError, :KeyError, :MailchimpError].each do |o|
     const_set(o, Class.new(StandardError))
-  }
+  end
 
   def initialize(key = nil)
     @key = key || self.class.key
@@ -51,7 +53,7 @@ class Feralchimp
   def method_missing(method, *args)
     if method == :export
       if args.count > 0
-        raise ::ArgumentError, "#{args.count} for 0"
+        raise ArgumentError, "#{args.count} for 0"
       end
 
       self.class.exportar = true
@@ -87,7 +89,7 @@ class Feralchimp
     }.post(api_path(export) % method, bananas.merge(apikey: key.first)).body
   end
 
-  private
+private
   def parse_key(key)
     unless key =~ %r!\w+-{1}[a-z]{2}\d{1}!
       raise KeyError, "Invalid key#{": #{key}" unless key.blank?}."
@@ -96,17 +98,14 @@ class Feralchimp
     key.split("-")
   end
 
-  private
   def api_path(export = false)
     export ? "/export/1.0/%s/" : "/1.3/?method=%s"
   end
 
-  private
   def api_url(zone)
     URI.parse("https://#{zone}.api.mailchimp.com")
   end
 
-  private
   def raise_or_return(rtn)
     if self.class.raise && (rtn.is_a?(Hash) && rtn.has_key?("error"))
       raise MailchimpError, rtn["error"]
@@ -156,5 +155,5 @@ class Feralchimp
   end
 end
 
-Faraday.register_middleware(:response, json: lambda { ::Feralchimp::Response::JSON })
-Faraday.register_middleware(:response, json_export: lambda { ::Feralchimp::Response::JSONExport })
+Faraday.register_middleware(:response, json: lambda { Feralchimp::Response::JSON })
+Faraday.register_middleware(:response, json_export: lambda { Feralchimp::Response::JSONExport })
