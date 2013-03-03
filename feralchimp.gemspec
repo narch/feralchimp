@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.authors = ["Jordon Bedwell"]
   s.add_runtime_dependency("json", "~> 1.7.7")
   s.add_runtime_dependency("faraday", "~> 0.8.6")
-  s.add_development_dependency("minitest", "~> 4.6")
+  s.add_development_dependency("rspec", "~> 2.13.0")
   s.add_development_dependency("webmock", "~> 1.10.1")
   s.homepage = "http://envygeeks.com/projects/feralchimp/"
   s.description = "A simple API wrapper for Mailchimp that uses Faraday."
