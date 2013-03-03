@@ -49,6 +49,11 @@ describe Feralchimp do
       expect(Feralchimp).to respond_to :api_key=
     end
 
+    it "should alias key over to apikey" do
+      expect(Feralchimp).to respond_to :apikey
+      expect(Feralchimp).to respond_to :apikey=
+    end
+
     it "should accept a timeout" do
       expect(Feralchimp).to respond_to :timeout
       expect(Feralchimp).to respond_to :timeout=

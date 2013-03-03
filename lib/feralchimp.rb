@@ -119,6 +119,7 @@ private
 
   class << self
     attr_accessor :exportar, :raise, :timeout, :key
+    alias :apikey= :key=; alias :apikey :key
     alias :api_key= :key=; alias :api_key :key
 
     def method_missing(method, *args)
