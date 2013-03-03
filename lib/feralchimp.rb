@@ -121,16 +121,11 @@ private
   end
 
   class << self
-    attr_accessor :exportar, :raise, :timeout, :key, :list_id
+    attr_accessor :exportar, :raise, :timeout, :key
     alias :api_key= :key=; alias :api_key :key
 
     def method_missing(method, *args)
       new.send(*args.unshift(method))
-    end
-
-    # Minitest
-    def to_str
-      to_s
     end
   end
 
