@@ -81,16 +81,21 @@ class Feralchimp
     self.class.exportar = false
     method = method.to_mailchimp_method
 
-    raise_or_return ::Faraday.new(:url => api_url(key.last)) { |o|
+    send_to_mailchimp_http(
+      key.last, method, bananas.merge(apikey: key.first), export)
+  end
+
+private
+  def send_to_mailchimp_http(zone, method, bananas, export)
+    raise_or_return Faraday.new(:url => api_url(zone)) { |o|
       o.response(export ? :mailchimp_export : :mailchimp)
       o.options[:open_timeout] = self.class.timeout
       o.options[:timeout] = self.class.timeout
       o.request(:url_encoded)
       o.adapter(Faraday.default_adapter)
-    }.post(api_path(export) % method, bananas.merge(apikey: key.first)).body
+    }.post(api_path(export) % method, bananas).body
   end
 
-private
   def parse_key(key)
     unless key =~ %r!\w+-{1}[a-z]{2}\d{1}!
       raise KeyError, "Invalid key#{": #{key}" unless key.blank?}."
