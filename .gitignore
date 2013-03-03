@@ -1,17 +1,10 @@
 /Gemfile.lock
-/benchmark
 /coverage
 /vendor
-/bundle
 /.pryrc
 /.rvmrc
-/.ruby
-/pkg
+/log
+/tmp
 /.bundle
-/tmp/**/*
-/log/**/*
 /**/*.gem
-/.ruby-version
-/.ruby_version
-/db/**/*.sqlite3
 
