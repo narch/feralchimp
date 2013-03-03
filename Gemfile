@@ -1,9 +1,10 @@
-source :rubygems
+source "https://rubygems.org"
 gemspec
 
 group :development do
-  gem "rb-inotify", "~> 0.9.0"
-  gem "rake", "~> 10.0.3"
-  gem "guard-minitest", "~> 0.5.0"
+  gem "rb-inotify"
+  gem "rake"
+  gem "simplecov"
+  gem "guard-rspec"
   gem "listen", github: "guard/listen"
 end
