@@ -1,6 +1,6 @@
 # Feralchimp
 
-[![Build Status](https://travis-ci.org/envygeeks/feralchimp.png?branch=master)](https://travis-ci.org/envygeeks/feralchimp) [![Coverage Status](https://coveralls.io/repos/envygeeks/feralchimp/badge.png?branch=master)](https://coveralls.io/r/envygeeks/feralchimp) [![Code Climate](https://codeclimate.com/github/envygeeks/feralchimp.png)](https://codeclimate.com/github/envygeeks/feralchimp)
+[![Build Status](https://travis-ci.org/envygeeks/feralchimp.png?branch=master)](https://travis-ci.org/envygeeks/feralchimp) [![Coverage Status](https://coveralls.io/repos/envygeeks/feralchimp/badge.png?branch=master)](https://coveralls.io/r/envygeeks/feralchimp) [![Code Climate](https://codeclimate.com/github/envygeeks/feralchimp.png)](https://codeclimate.com/github/envygeeks/feralchimp) [![Dependency Status](https://gemnasium.com/envygeeks/feralchimp.png)](https://gemnasium.com/envygeeks/feralchimp)
 
 Feralchimp is a Ruby based API wrapper for the MailChimp API, it is modeled after [Gibbon](https://github.com/amro/gibbon) and it is not meant to be a replacement for the excellent [Gibbon](https://github.com/amro/gibbon)... that is unless you are seeking better control over your HTTP. On that note, it is certainly not meant to be better than the already excellent [Gibbon](https://github.com/amro/gibbon) wrapper. The idea did not spawn from hatred...well not of Gibbon, just of the fact that I had HTTParty and Faraday in the same Rails app when I could have had only Faraday.
 
