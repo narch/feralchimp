@@ -17,6 +17,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency("simplecov")
   spec.add_runtime_dependency("json", "~> 1.7.7")
   spec.add_runtime_dependency("faraday", "~> 0.8.6")
+  spec.add_development_dependency("luna-rspec-formatters")
   spec.homepage = "http://github.com/envygeeks/feralchimp/"
   spec.files = %W(Rakefile Gemfile Readme.md License) + Dir["lib/**/*"]
   spec.description = "A simple API wrapper for Mailchimp that uses Faraday."
