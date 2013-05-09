@@ -1,20 +1,20 @@
 $:.unshift(File.expand_path("../lib", __FILE__))
 require "feralchimp/version"
 
-Gem::Specification.new do |s|
-  s.summary = "A simple API wrapper for Mailchimp."
-  s.email = ["jordon@envygeeks.com"]
-  s.version = Feralchimp::VERSION
-  s.name = "feralchimp"
-  s.license = "MIT"
-  s.has_rdoc = false
-  s.files = Dir["**/*"]
-  s.require_paths = ["lib"]
-  s.authors = ["Jordon Bedwell"]
-  s.add_runtime_dependency("json", "~> 1.7.7")
-  s.add_runtime_dependency("faraday", "~> 0.8.6")
-  s.add_development_dependency("rspec", "~> 2.13.0")
-  s.add_development_dependency("webmock", "~> 1.10.1")
-  s.homepage = "http://envygeeks.com/projects/feralchimp/"
-  s.description = "A simple API wrapper for Mailchimp that uses Faraday."
+Gem::Specification.new do |spec|
+  spec.summary = "A simple API wrapper for Mailchimp."
+  spec.email = ["envygeeks@gmail.com"]
+  spec.version = Feralchimp::VERSION
+  spec.name = "feralchimp"
+  spec.license = "MIT"
+  spec.has_rdoc = false
+  spec.files = Dir["**/*"]
+  spec.require_paths = ["lib"]
+  spec.authors = ["Jordon Bedwell"]
+  spec.add_runtime_dependency("json", "~> 1.7.7")
+  spec.add_runtime_dependency("faraday", "~> 0.8.6")
+  spec.add_development_dependency("rspec", "~> 2.13.0")
+  spec.add_development_dependency("webmock", "~> 1.10.1")
+  spec.homepage = "http://envygeeks.com/projects/feralchimp/"
+  spec.description = "A simple API wrapper for Mailchimp that uses Faraday."
 end
