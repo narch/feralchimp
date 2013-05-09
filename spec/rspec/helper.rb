@@ -40,7 +40,7 @@ require "feralchimp"
 WebMock.disable_net_connect!
 
 def get_stub_response(name)
-  IO.read(File.expand_path("../../responses/#{name}.json", __FILE__))
+  IO.read(File.expand_path("../../fixtures/#{name}.json", __FILE__))
 end
 
 def to_constant(name)
