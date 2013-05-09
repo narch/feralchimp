@@ -13,6 +13,7 @@ Gem::Specification.new do |spec|
   spec.has_rdoc = false
   spec.require_paths = ["lib"]
   spec.authors = ["Jordon Bedwell"]
+  spec.add_development_dependency("rake")
   spec.add_development_dependency("rspec")
   spec.add_development_dependency("simplecov")
   spec.add_runtime_dependency("json", "~> 1.7.7")
