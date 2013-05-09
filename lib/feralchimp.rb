@@ -8,15 +8,8 @@ require "cgi"
 # Allow for export(1).list flow.
 class FeralchimpErrorHash < Hash
   def initialize(hash = nil)
-    if hash.is_a?(Hash)
-      hash.each do |k, v|
-        self[k] = v
-      end
-
-      return self
-    end
-
-  super
+    self.replace(hash) if Hash === hash
+    super
   end
 
   def method_missing(method, *args)
@@ -37,10 +30,10 @@ class Object
 end
 
 class Feralchimp
-  @key = ENV["MAILCHIMP_API_KEY"]
   @exportar = false
-  @timeout = 5
   @raise = false
+  @timeout = 5
+  @key = ENV["MAILCHIMP_API_KEY"]
 
   [:KeyError, :MailchimpError].each do |o|
     const_set o, Class.new(StandardError)
@@ -52,47 +45,45 @@ class Feralchimp
 
   def method_missing(method, *args)
     if method == :export
-      if args.count > 0
-        raise ArgumentError, "#{args.count} for 0"
-      end
-
+      raise ArgumentError, "#{args.count} for 0" if args.count > 0
       self.class.exportar = true
-      return self # Oh, trickey!
+      return self
+    else
+      send_to_mailchimp(method, *args)
     end
-
-    send_to_mailchimp(method, *args)
   rescue => error
     if self.class.raise
       raise error
     else
-      FeralchimpErrorHash.new({
-        "object" => error,
-        "code" => 9001,
-        "error" => error.message
-      })
+      FeralchimpErrorHash.new({ "object" => error, "code" => 9001, "error" => error.message })
     end
   end
 
-private
+  private
   def send_to_mailchimp(method, bananas = {}, export = self.class.exportar)
     key = parse_key(bananas.delete(:apikey) || @key)
     self.class.exportar = false
     method = method.to_mailchimp_method
-
-    send_to_mailchimp_http(
-      key.last, method, bananas.merge(apikey: key.first), export)
+    send_to_mailchimp_http(key.last, method, bananas.merge(apikey: key.first), export)
   end
 
+  private
   def send_to_mailchimp_http(zone, method, bananas, export)
-    raise_or_return Faraday.new(:url => api_url(zone)) { |o|
-      o.response(export ? :mailchimp_export : :mailchimp)
-      o.options[:open_timeout] = self.class.timeout
-      o.options[:timeout] = self.class.timeout
-      o.request(:url_encoded)
-      o.adapter(Faraday.default_adapter)
-    }.post(api_path(export) % method, bananas).body
+    raise_or_return mailchimp_http(zone, export).post(api_path(export) % method, bananas).body
   end
 
+  private
+  def mailchimp_http(zone, export)
+    Faraday.new(:url => api_url(zone)) do |http|
+      http.options[:open_timeout] = self.class.timeout
+      http.options[:timeout] = self.class.timeout
+      http.request(:url_encoded)
+      http.adapter(Faraday.default_adapter)
+      http.response(export ? :mailchimp_export : :mailchimp)
+    end
+  end
+
+  private
   def parse_key(key)
     unless key =~ %r!\w+-{1}[a-z]{2}\d{1}!
       raise KeyError, "Invalid key#{": #{key}" unless key.blank?}."
@@ -101,14 +92,17 @@ private
     key.split("-")
   end
 
+  private
   def api_path(export = false)
     export ? "/export/1.0/%s/" : "/1.3/?method=%s"
   end
 
+  private
   def api_url(zone)
     URI.parse("https://#{zone}.api.mailchimp.com")
   end
 
+  private
   def raise_or_return(rtn)
     if self.class.raise && (rtn.is_a?(Hash) && rtn.has_key?("error"))
       raise MailchimpError, rtn["error"]
