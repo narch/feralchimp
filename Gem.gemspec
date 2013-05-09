@@ -3,18 +3,21 @@ require "feralchimp/version"
 
 Gem::Specification.new do |spec|
   spec.summary = "A simple API wrapper for Mailchimp."
+  spec.add_development_dependency("guard-rspec")
+  spec.add_development_dependency("coveralls")
+  spec.add_development_dependency("webmock")
   spec.email = ["envygeeks@gmail.com"]
   spec.version = Feralchimp::VERSION
   spec.name = "feralchimp"
   spec.license = "MIT"
   spec.has_rdoc = false
-  spec.files = Dir["**/*"]
   spec.require_paths = ["lib"]
   spec.authors = ["Jordon Bedwell"]
+  spec.add_development_dependency("rspec")
+  spec.add_development_dependency("simplecov")
   spec.add_runtime_dependency("json", "~> 1.7.7")
   spec.add_runtime_dependency("faraday", "~> 0.8.6")
-  spec.add_development_dependency("rspec", "~> 2.13.0")
-  spec.add_development_dependency("webmock", "~> 1.10.1")
-  spec.homepage = "http://envygeeks.com/projects/feralchimp/"
+  spec.homepage = "http://github.com/envygeeks/feralchimp/"
+  spec.files = %W(Rakefile Gemfile Readme.md License) + Dir["lib/**/*"]
   spec.description = "A simple API wrapper for Mailchimp that uses Faraday."
 end
