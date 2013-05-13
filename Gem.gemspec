@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency("rake")
   spec.add_development_dependency("rspec")
   spec.add_development_dependency("simplecov")
-  spec.add_runtime_dependency("json", "~> 1.7.7")
+  spec.add_runtime_dependency("json", "~> 1.8.0")
   spec.add_runtime_dependency("faraday", "~> 0.8.6")
   spec.add_development_dependency("luna-rspec-formatters")
   spec.homepage = "http://github.com/envygeeks/feralchimp/"
