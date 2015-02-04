@@ -64,7 +64,7 @@ class Feralchimp
     key = parse_key(bananas.delete(:apikey) || @key)
     self.class.exportar = false
     method = method.to_mailchimp_method
-    send_to_mailchimp_http(key.last, method, bananas.merge(apikey: key.first), export)
+    send_to_mailchimp_http(key.last, method, bananas.merge(:apikey => key.first), export)
   end
 
   private
